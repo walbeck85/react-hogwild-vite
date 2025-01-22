@@ -1,5 +1,9 @@
 # Hogwild: The React app for fans of prize-winning pigs
 
+Imagine you are tasked with creating an interface for a pig farming competition for your local county fair that will show details about all the pigs who have entered the county fair competition along with their details that will be provided for you in a file. Your app must allow users to filter, sort, and update the displayed hogs while maintaining accessibility and responsiveness.
+To complete this lab, you’ll need to apply your knowledge of component-based design, props, state management, event handling, and conditional rendering.
+
+
 ## Instructions
 - To run the lab:
 ```bash
@@ -43,7 +47,7 @@ hogs (not delete them, just hide them from view!)
 
 - Follow
   [React best practices](https://reactjs.org/docs/thinking-in-react.html) to
-  create components and decide on where state needs to live based on
+  create components and decide on where state needs to live
 - Pass props down from parent components to children
 - Use inverse data flow and callback functions to pass data up from child
   components to parents
@@ -51,8 +55,8 @@ hogs (not delete them, just hide them from view!)
 
 ## What we have so far
 
-- A file containing all our hog data (`./src/porkers_data.js`) imported into `App.js`
-- A `<Nav>` component rendered in our `App.js`
+- A file containing all our hog data (`./src/porkers_data.js`) imported into `App.jsx`
+- A `<Nav>` component rendered in our `App.jsx`
 
 ## Trying to figure out where to start?
 
