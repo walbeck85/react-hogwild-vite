@@ -1,16 +1,15 @@
-// App.jsx – Main component for the HogWild app
-// Handles state, form input, filtering, and displaying hogs
-
+// App.jsx – Main component file for HogWild
+// Handles rendering, filtering, form input, and hide/show behavior for the hog competition app
 import React, { useState } from "react";
 import Nav from "./Nav";
 import hogsData from "../porkers_data";
 
-function HogCard({ hog }) {
-  // This component renders one hog's card
-  // It shows more details when you click the card
-
+function HogCard({ hog, onHideHog }) {
+  // Each hog gets its own card component.
+  // This local state controls whether we show extra details.
   const [showDetails, setShowDetails] = useState(false);
 
+  // Toggle the details panel open/closed when the card is clicked.
   function handleClick() {
     setShowDetails(!showDetails);
   }
@@ -27,9 +26,9 @@ function HogCard({ hog }) {
             src={hog.image}
             alt={hog.name}
             onError={(e) => {
-              // If the image doesn't load, use fallback hog picture
+              // If the image fails to load, show a fallback pig image instead.
               console.error(`Image failed to load for hog: ${hog.name}`);
-              e.target.src = "https://imgur.com/a/ESu7SoF"; // Fallback image URL
+              e.target.src = "https://i.imgur.com/MT5VQ76.jpg";
             }}
           />
         </div>
@@ -45,15 +44,30 @@ function HogCard({ hog }) {
             <p><strong>Highest Medal Achieved:</strong> {hog["highest medal achieved"]}</p>
           </div>
         )}
+
+        {/* Hide Me button is rendered at the bottom of the card */}
+        <div className="extra content">
+          <button
+            className="ui button"
+            onClick={(e) => {
+              e.stopPropagation(); // prevent triggering handleClick
+              onHideHog(hog.name);
+            }}
+          >
+            Hide Me
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
+// App is the main component that manages state for the whole app.
+// We handle filtering, form inputs, and rendering here.
 function App() {
-  // Set up the main state hooks
-  const [greasedOnly, setGreasedOnly] = useState(false); // filter checkbox state
-  const [hogs, setHogs] = useState(hogsData); // full hog list (plus added ones)
+  const [greasedOnly, setGreasedOnly] = useState(false);
+  const [hogs, setHogs] = useState(hogsData);
+  const [hiddenHogs, setHiddenHogs] = useState([]);
   const [form, setForm] = useState({
     name: "",
     image: "",
@@ -63,12 +77,10 @@ function App() {
     medal: ""
   });
 
-  // Checkbox to filter by greased hogs only
   function handleGreasedChange(event) {
     setGreasedOnly(event.target.checked);
   }
 
-  // Tracks all changes in the form fields
   function handleInputChange(e) {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
@@ -77,7 +89,6 @@ function App() {
     }));
   }
 
-  // When form is submitted, create a new hog and add it to the list
   function handleFormSubmit(e) {
     e.preventDefault();
 
@@ -92,7 +103,6 @@ function App() {
 
     setHogs([...hogs, newHog]);
 
-    // Reset form after submission
     setForm({
       name: "",
       image: "",
@@ -103,15 +113,13 @@ function App() {
     });
   }
 
-  // Filter the hog list if greasedOnly is true
-  const displayedHogs = greasedOnly
-    ? hogs.filter(hog => hog.greased)
-    : hogs;
+  const displayedHogs = (greasedOnly ? hogs.filter(hog => hog.greased) : hogs).filter(
+    (hog) => !hiddenHogs.includes(hog.name)
+  );
 
   return (
     <div className="App">
       <Nav />
-
       <div className="ui form">
         <div className="field">
           <label htmlFor="greased-checkbox">
@@ -126,7 +134,7 @@ function App() {
         </div>
       </div>
 
-      // Form for adding new hogs
+      {/* Form for adding a new hog. Controlled inputs using local form state. */}
       <form className="ui form" onSubmit={handleFormSubmit}>
         <div className="field">
           <label htmlFor="name">Name</label>
@@ -155,10 +163,14 @@ function App() {
         <button className="ui button" type="submit">Add Hog</button>
       </form>
 
-      // Render the list of hog cards (filtered or not)
+      {/* Render all hogs (either full list or filtered) using HogCard component */}
       <div className="ui grid container">
         {displayedHogs.map((hog, index) => (
-          <HogCard key={index} hog={hog} />
+          <HogCard
+            key={index}
+            hog={hog}
+            onHideHog={(name) => setHiddenHogs([...hiddenHogs, name])}
+          />
         ))}
       </div>
     </div>
